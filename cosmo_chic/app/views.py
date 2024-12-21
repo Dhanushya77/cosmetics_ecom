@@ -47,6 +47,25 @@ def shop_home(req):
         return render(req,'shop/home.html',{'product':products})
     else:
         return redirect(cosmetic_login)
+    
+def details(req):
+    return render(req,'shop/details')
+
+def add_pro(req):
+    if 'shop' in req.session:
+        if req.method == 'POST':
+            pid = req.POST['pid']
+            name = req.POST['name']
+            dis = req.POST['dis']
+            img = req.FILES.get('img')
+            data = product.objects.create(pid=pid,name=name,dis=dis,img=img)
+            print('req.FILES')
+            data.save()
+            return redirect(details)
+        else:
+            return render(req,'shop/add_pro.html')
+    else:
+        return redirect(cosmetic_login)
 
 
 # -----------------user---------------------------------------------
@@ -73,3 +92,5 @@ def user_home(req):
         return render(req,'user/home.html',{'product':products})
     else:
         return redirect(cosmetic_login)
+
+
