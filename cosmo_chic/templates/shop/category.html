@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    {% comment %} {% load static %}
+    <link rel="stylesheet" href="{% static 'cos_style1.css' %}"> {% endcomment %}
+</head>
+<body>
+    <div class="main">
+        <h1>ADD CATEGORY</h1>
+         <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="text" name="category" id="cid" class="input1" placeholder="Category" required><br><br>
+        <input type="submit" value="add" class="input2"><br><br>
+    </form>
+    </div>
+   
+</body>

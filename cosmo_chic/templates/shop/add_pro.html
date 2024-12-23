@@ -12,6 +12,12 @@
         <h1>ADD PRODUCT</h1>
          <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        <label for="pro_category">Product categories:</label><br>
+        <select name="category" class="drop" id="" required>
+            {% for i in data %}
+            <option value="{{i.category}}">{{i.category}}</option>
+            {% endfor %}
+        </select><br><br>
         <input type="text" name="pid" id="" class="input1" placeholder="product id" required><br><br>
         <input type="text" name="name" id="" class="input1" placeholder="name" required><br><br>
         <input type="text" name="dis" id="" class="input1" placeholder="description" required><br><br>

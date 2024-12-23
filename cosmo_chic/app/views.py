@@ -49,21 +49,43 @@ def shop_home(req):
         return redirect(cosmetic_login)
     
 def details(req):
-    return render(req,'shop/details')
-
+    if req.method=='POST':
+        pro=req.POST['pid']
+        price=req.POST['price']
+        offer_price=req.POST['offer_price']
+        stock=req.POST['stock']
+        weight=req.POST['weight']
+        data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product.objects.get(pid=pro))
+        data.save()
+        return redirect(shop_home)
+    else:
+        data=product.objects.all()
+        return render(req,'shop/details.html',{'data':data})
+    
+def category(req):
+    if req.method=='POST':
+        category=req.POST['category']
+        data= Category.objects.create(category=category)
+        data.save()
+        return redirect(shop_home)
+    else:
+        data=Category.objects.all()
+        return render(req,'shop/category.html',{'data':data})
+    
 def add_pro(req):
     if 'shop' in req.session:
         if req.method == 'POST':
             pid = req.POST['pid']
             name = req.POST['name']
             dis = req.POST['dis']
+            category = req.POST['category']
             img = req.FILES.get('img')
-            data = product.objects.create(pid=pid,name=name,dis=dis,img=img)
-            print('req.FILES')
+            data = product.objects.create(pid=pid,name=name,dis=dis,category=Category.objects.get(category=category),img=img)
             data.save()
             return redirect(details)
         else:
-            return render(req,'shop/add_pro.html')
+            data=Category.objects.all()
+            return render(req,'shop/add_pro.html',{'data':data})
     else:
         return redirect(cosmetic_login)
 

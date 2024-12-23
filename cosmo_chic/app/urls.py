@@ -8,6 +8,7 @@ urlpatterns = [
     path('shop_home',views.shop_home),
     path('add_pro',views.add_pro),
     path('details',views.details),
+    path('category',views.category),
 
     # -----------user-----------------------
     path('register/',views.register),
