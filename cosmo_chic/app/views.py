@@ -58,6 +58,7 @@ def details(req):
         data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product.objects.get(pid=pro))
         data.save()
         return redirect(shop_home)
+
     else:
         data=product.objects.all()
         return render(req,'shop/details.html',{'data':data})
@@ -88,6 +89,43 @@ def add_pro(req):
             return render(req,'shop/add_pro.html',{'data':data})
     else:
         return redirect(cosmetic_login)
+    
+    
+def edit_pro(req, id):
+    if req.method == 'POST':
+        pid = req.POST['pid']
+        name = req.POST['name']
+        dis = req.POST['dis']
+        price = req.POST['price']
+        offer_price = req.POST['offer_price']
+        stock = req.POST['stock']
+        weight = req.POST['weight']
+        img = req.FILES.get('img')
+        
+        if img:
+            product.objects.filter(pk=id).update(pid=pid, name=name, dis=dis)
+            data = product.objects.get(pk=id)
+            data.img = img
+            data.save()
+        else:
+            product.objects.filter(pk=id).update(pid=pid, name=name, dis=dis)
+        
+        Details.objects.filter(pk=id).update(price=price, offer_price=offer_price, stock=stock,weight=weight)
+        return redirect(shop_home)
+    else:
+        product_data = product.objects.get(pk=id)
+        details_data = Details.objects.get(pk=id)
+        return render(req, 'shop/edit_pro.html', {'product_data': product_data, 'details_data': details_data})
+
+    
+def delete_pro(req,pid):
+    data=product.objects.get(pk=pid)
+    file=data.img.url
+    file=file.split('/')[-1]
+    os.remove('media/'+file)
+    data.delete()
+    return redirect(shop_home)
+
 
 
 # -----------------user---------------------------------------------

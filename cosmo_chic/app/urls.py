@@ -9,6 +9,9 @@ urlpatterns = [
     path('add_pro',views.add_pro),
     path('details',views.details),
     path('category',views.category),
+    path('edit_pro/<id>',views.edit_pro),
+    path('delete_pro/<pid>',views.delete_pro),
+    
 
     # -----------user-----------------------
     path('register/',views.register),
