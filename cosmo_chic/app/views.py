@@ -6,6 +6,7 @@ import os
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.conf import settings
+import random
 
 # Create your views here.
 
@@ -43,35 +44,32 @@ def cosmetic_logout(req):
 
 def shop_home(req):
     if 'shop' in req.session:
-        products = product.objects.all()
-        return render(req,'shop/home.html',{'product':products})
+        # products = product.objects.all()
+        details = Details.objects.all()
+        return render(req,'shop/home.html',{'details':details})
     else:
         return redirect(cosmetic_login)
     
-def details(req):
-    if req.method=='POST':
-        pro=req.POST['pid']
-        price=req.POST['price']
-        offer_price=req.POST['offer_price']
-        stock=req.POST['stock']
-        weight=req.POST['weight']
-        data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product.objects.get(pid=pro))
-        data.save()
-        return redirect(shop_home)
 
-    else:
-        data=product.objects.all()
-        return render(req,'shop/details.html',{'data':data})
-    
 def category(req):
     if req.method=='POST':
         category=req.POST['category']
         data= Category.objects.create(category=category)
         data.save()
-        return redirect(shop_home)
+        return redirect(view_category)
     else:
         data=Category.objects.all()
         return render(req,'shop/category.html',{'data':data})
+
+def view_category(req):
+    category=Category.objects.all()
+    return render(req,'shop/view_category.html',{'category':category})
+    
+def delete_category(req,id):
+    data=Category.objects.get(pk=id)
+    data.delete()
+    return redirect(view_category)
+
     
 def add_pro(req):
     if 'shop' in req.session:
@@ -89,6 +87,21 @@ def add_pro(req):
             return render(req,'shop/add_pro.html',{'data':data})
     else:
         return redirect(cosmetic_login)
+    
+def details(req):
+    if req.method=='POST':
+        pro=req.POST['pid']
+        price=req.POST['price']
+        offer_price=req.POST['offer_price']
+        stock=req.POST['stock']
+        weight=req.POST['weight']
+        data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product.objects.get(pid=pro))
+        data.save()
+        return redirect(shop_home)
+
+    else:
+        data=product.objects.all()
+        return render(req,'shop/details.html',{'data':data})
     
     
 def edit_pro(req, id):
@@ -138,13 +151,42 @@ def register(req):
         try:
             data=User.objects.create_user(first_name=uname,email=email,username=email,password=pswrd)
             data.save()
+            otp=""
+            for i in range(6):
+                otp+=str(random.randint(0,9))
+            msg=f'Your registration is completed otp: {otp}'
+            send_mail('Registration',otp, settings.EMAIL_HOST_USER, [email])
+            Otp.objects.create(user=data,otp=otp)
             send_mail('Registration','Your registration completed', settings.EMAIL_HOST_USER, [email])
-            return redirect(cosmetic_login)
+            return redirect(otp_confirmation)
         except:
             messages.warning(req,'Email already exist')
-            return redirect(cosmetic_login)
+            return redirect(register)
     else:
         return render(req,'user/register.html')
+    
+def otp_confirmation(req):
+    if req.method == 'POST':
+        uname = req.POST.get('uname')
+        user_otp = req.POST.get('otp')
+        try:
+            user = User.objects.get(username=uname)
+            generated_otp = Otp.objects.get(user=user)
+    
+            if generated_otp.otp == user_otp:
+                generated_otp.delete()
+                return redirect(cosmetic_login)
+            else:
+                messages.warning(req, 'Invalid OTP')
+                return redirect(otp_confirmation)
+        except User.DoesNotExist:
+            messages.warning(req, 'User does not exist')
+            return redirect(otp_confirmation)
+        except Otp.DoesNotExist:
+            messages.warning(req, 'OTP not found or expired')
+            return redirect(otp_confirmation)
+    return render(req, 'user/otp.html')
+
     
 def user_home(req):
     if 'user' in req.session:

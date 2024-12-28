@@ -9,11 +9,14 @@ urlpatterns = [
     path('add_pro',views.add_pro),
     path('details',views.details),
     path('category',views.category),
+    path('view_category',views.view_category),
+    path('delete_category/<id>',views.delete_category),
     path('edit_pro/<id>',views.edit_pro),
     path('delete_pro/<pid>',views.delete_pro),
     
 
     # -----------user-----------------------
     path('register/',views.register),
+    path('otp',views.otp_confirmation),
     path('user_home',views.user_home),
 ]

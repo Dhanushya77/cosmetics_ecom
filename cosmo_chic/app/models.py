@@ -18,3 +18,7 @@ class Details(models.Model):
     offer_price = models.IntegerField()
     stock = models.IntegerField()
     weight = models.TextField()
+
+class Otp(models.Model):
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    otp=models.TextField()
