@@ -11,8 +11,11 @@ urlpatterns = [
     path('category',views.category),
     path('view_category',views.view_category),
     path('delete_category/<id>',views.delete_category),
+    path('view_products/<id>',views.view_products),
     path('edit_pro/<id>',views.edit_pro),
     path('delete_pro/<pid>',views.delete_pro),
+    path('add_to_cart/<pid>',views.add_to_cart),
+    path('view_cart',views.view_cart),
     
 
     # -----------user-----------------------

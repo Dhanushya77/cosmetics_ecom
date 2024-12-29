@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate,login,logout
 from django.contrib import messages
 from.models import *
@@ -45,8 +45,10 @@ def cosmetic_logout(req):
 def shop_home(req):
     if 'shop' in req.session:
         # products = product.objects.all()
+        categories = Category.objects.all()
+        category_products = {category.category: product.objects.filter(category=category) for category in categories}
         details = Details.objects.all()
-        return render(req,'shop/home.html',{'details':details})
+        return render(req,'shop/home.html',{'details':details,'category':categories,"category_products":category_products})
     else:
         return redirect(cosmetic_login)
     
@@ -69,6 +71,12 @@ def delete_category(req,id):
     data=Category.objects.get(pk=id)
     data.delete()
     return redirect(view_category)
+
+def view_products(req,id):
+    category = get_object_or_404(Category, pk=id)
+    details = Details.objects.filter(product__category=category)
+    return render(req, 'shop/view_products.html', {'category': category,'details': details})
+ 
 
     
 def add_pro(req):
@@ -196,3 +204,19 @@ def user_home(req):
         return redirect(cosmetic_login)
 
 
+def add_to_cart(req, pid):
+    products = product.objects.get(pk=pid)
+    user = User.objects.get(username=req.session['user'])
+    try:
+        cart = Cart.objects.get(product=products, user=user)
+        cart.quantity += 1
+        cart.save()
+    except:
+        data = Cart.objects.create(product=products, user=user, quantity=1)
+        data.save()
+    return redirect(view_cart)
+
+def view_cart(req):
+    user = User.objects.get(username=req.session['user'])
+    data = Cart.objects.filter(user=user)
+    return render(req, 'user/cart.html', {'cart': data})
