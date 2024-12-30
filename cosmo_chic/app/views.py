@@ -73,7 +73,7 @@ def delete_category(req,id):
     return redirect(view_category)
 
 def view_products(req,id):
-    category = get_object_or_404(Category, pk=id)
+    category = Category.objects.get(pk=id)
     details = Details.objects.filter(product__category=category)
     return render(req, 'shop/view_products.html', {'category': category,'details': details})
  
@@ -220,3 +220,8 @@ def view_cart(req):
     user = User.objects.get(username=req.session['user'])
     data = Cart.objects.filter(user=user)
     return render(req, 'user/cart.html', {'cart': data})
+
+def remove_item(req,id):
+    data=Cart.objects.get(pk=id)
+    data.delete()
+    return redirect(view_cart)

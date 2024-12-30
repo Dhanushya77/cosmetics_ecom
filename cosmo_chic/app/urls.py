@@ -14,12 +14,14 @@ urlpatterns = [
     path('view_products/<id>',views.view_products),
     path('edit_pro/<id>',views.edit_pro),
     path('delete_pro/<pid>',views.delete_pro),
-    path('add_to_cart/<pid>',views.add_to_cart),
-    path('view_cart',views.view_cart),
+
     
 
     # -----------user-----------------------
     path('register/',views.register),
     path('otp',views.otp_confirmation),
     path('user_home',views.user_home),
+    path('add_to_cart/<pid>',views.add_to_cart),
+    path('view_cart',views.view_cart),
+    path('remove_item/<id>',views.remove_item),
 ]

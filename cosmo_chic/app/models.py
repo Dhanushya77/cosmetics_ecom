@@ -26,4 +26,5 @@ class Otp(models.Model):
 class Cart(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     product = models.ForeignKey(product, on_delete=models.CASCADE)
+    # details = models.ForeignKey(Details,on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField(default=1)
