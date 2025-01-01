@@ -225,3 +225,20 @@ def remove_item(req,id):
     data=Cart.objects.get(pk=id)
     data.delete()
     return redirect(view_cart)
+
+def quantity_inc(req,cid):
+    data=Cart.objects.get(pk=cid)
+    details=Details.objects.get(pk=cid)
+    if details.stock > data.quantity:
+        data.quantity+=1
+        data.save()
+    return redirect(view_cart) 
+
+def quantity_dec(req,cid):
+    data=Cart.objects.get(pk=cid)
+    data.quantity-=1
+    data.save()
+    if data.quantity==0:
+        data.delete()
+    return redirect(view_cart)
+

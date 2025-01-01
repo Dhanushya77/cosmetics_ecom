@@ -48,13 +48,11 @@
                 <div class="card-body text-center">
                     <h5 class="card-title fw-bold">{{ items.product.name }}</h5>
                     <p class="card-text text-muted">{{ items.product.dis }}</p>
-                    <!-- <p class="card-text text-muted">₹{{ items.product.offer_price }}</p> -->
-                    <p class="card-text text-muted">Quantity: {{ items.quantity }}</p>
-                    <div class="d-flex justify-content-center gap-3">
-                        <a href="remove_item/{{ items.id }}" class="btn btn-outline-danger btn-sm" onclick="return confirm('Are you sure you want to remove this item from the cart?')">
-                            <i class="fas fa-trash"></i> Remove
-                        </a>
-                    </div>
+                    {% comment %} <p class="card-text text-muted">₹{{ items.product.offer_price }}</p>  {% endcomment %}
+                    <p class="card-text text-muted"> <span> <a href="quantity_inc/{{ items.id }}" class="btn btn-outline-secondary btn-sm">+
+                    </a></span> {{ items.quantity }} <span><a href="quantity_dec/{{ items.id }}" class="btn btn-outline-secondary btn-sm">-
+                    </a></span></p>
+                 
                 </div>
             </div>
         </div>
