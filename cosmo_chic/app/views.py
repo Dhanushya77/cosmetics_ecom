@@ -103,7 +103,8 @@ def details(req):
         offer_price=req.POST['offer_price']
         stock=req.POST['stock']
         weight=req.POST['weight']
-        data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product.objects.get(pid=pro))
+        product_instance = product.objects.get(pid=pro)
+        data=Details.objects.create(price=price,offer_price=offer_price,stock=stock,weight=weight,product=product_instance)
         data.save()
         return redirect(shop_home)
 
@@ -198,17 +199,27 @@ def otp_confirmation(req):
     
 def user_home(req):
     if 'user' in req.session:
-        products = product.objects.all()
+        products = product.objects.all().order_by('id')
         return render(req,'user/home.html',{'product':products})
     else:
         return redirect(cosmetic_login)
 
 def view_details(req,id):
-    details=Details.objects.get(pk=id)
-    return render(req,'user/view_details.html',{'details':details})
+    products = product.objects.filter(pk=id).first()
+    if products:
+        details = Details.objects.filter(product=products).first()
+        if details:
+            return render(req,'user/view_details.html',{'details':details})
+        else:
+            
+            return render(req,'user/view_details.html', {'message': 'No details available for this product.'})
+    else:
+        
+        return render(req, 'user/view_details.html', {'message': 'Product not found.'})
 
 def add_to_cart(req, pid):
-    details = Details.objects.get(pk=pid)
+    products = product.objects.filter(pk=pid).first()
+    details = Details.objects.get(product=products)
     user = User.objects.get(username=req.session['user'])
     try:
         cart = Cart.objects.get(details=details, user=user)
@@ -222,12 +233,13 @@ def add_to_cart(req, pid):
 def view_cart(req):
     user = User.objects.get(username=req.session['user'])
     data = Cart.objects.filter(user=user)
-    return render(req, 'user/cart.html', {'cart': data})
+    total_price = sum(item.quantity * item.details.offer_price for item in data)
+    return render(req, 'user/cart.html', {'cart': data,'total_price':total_price})
 
-def remove_item(req,id):
-    data=Cart.objects.get(pk=id)
-    data.delete()
-    return redirect(view_cart)
+# def remove_item(req,id):
+#     data=Cart.objects.get(pk=id)
+#     data.delete()
+#     return redirect(view_cart)
 
 def quantity_inc(req,cid):
     data=Cart.objects.get(pk=cid)
@@ -258,12 +270,27 @@ def user_bookings(req):
     bookings=Buy.objects.filter(user=user)[::-1]
     return render(req,'user/user_bookings.html',{'bookings':bookings})
 
-def cart_buy(req,cid):
-    cart=Cart.objects.get(pk=cid)
-    price=cart.quantity*cart.details.offer_price
-    details=cart.details
-    details.stock-=cart.quantity
-    details.save()
-    buy=Buy.objects.create(details=cart.details,user=cart.user,quantity=cart.quantity,t_price=price)
-    buy.save()
+def cart_buy(req):
+    user = User.objects.get(username=req.session['user'])
+    cart_items = Cart.objects.filter(user=user)
+
+    if not cart_items:
+        return redirect(view_cart)
+
+    for cart in cart_items:
+        price = cart.quantity * cart.details.offer_price
+        details = cart.details
+
+        if details.stock >= cart.quantity:
+
+            details.stock -= cart.quantity
+            details.save()
+
+            Buy.objects.create(details=details,user=user,quantity=cart.quantity,t_price=price)
+        else:
+            return redirect(view_cart)
+
+    cart_items.delete()
+
     return redirect(user_bookings)
+

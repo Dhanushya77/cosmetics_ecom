@@ -17,18 +17,17 @@
 
 <body>
     <div class="d-flex">
-    <img src="{{details.product.img.url}}" alt="image" style="width: 350px;" height="350px"><br><br>
     <div class="container" style="text-align: center;">
-        
+        <img src="{{details.product.img.url}}" alt="image" style="width: 350px;" height="350px"><br><br>
         <h5 class="card-title fw-bold">{{details.product.name}}</h5>
         <p class="card-text text-muted">{{details.product.dis}}</p>
         <p class="card-text text-muted">weight: {{details.weight}}</p>
         <p style="color: black;" class="card-text text-muted">₹{{details.offer_price}} <span style="text-decoration: line-through;">₹{{details.price}}</span></p>
         <div class="d-flex justify-content-center gap-3" style="margin-top: 6vh;">
-            <a href="add_to_cart/{{pro.pk}}" class="btn btn-outline-primary btn-sm">
+            <a href="../add_to_cart/{{details.product.id}}" class="btn btn-outline-primary btn-sm">
                 <i class="fas fa-cart-plus"></i> Add to cart
             </a>
-            <a href="buy_now/{{pro.pk}}" class="btn btn-outline-danger btn-sm">
+            <a href="../buy_pro/{{details.product.id}}" class="btn btn-outline-danger btn-sm">
                 <i class="fas fa-credit-card"></i> Buy now
             </a>
         </div>

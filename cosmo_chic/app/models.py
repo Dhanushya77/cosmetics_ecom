@@ -7,7 +7,7 @@ class Category(models.Model):
 
 class product(models.Model):
     category = models.ForeignKey(Category,on_delete=models.CASCADE)
-    pid = models.TextField()
+    pid = models.TextField(unique=True)
     name = models.TextField()
     dis = models.TextField()
     img = models.FileField()

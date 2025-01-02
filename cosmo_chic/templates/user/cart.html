@@ -47,12 +47,14 @@
     <div class="row g-4">
         {% for items in cart %}
         <div class="col-md-4">
-            <div class="card shadow-sm" style="width:70%; margin:auto;">
+            <div class="card shadow-sm" style="width:70%; margin:auto; height:490px;">
                 <img class="card-img-top" src="{{ items.details.product.img.url }}" alt="{{ items.product.name }}" style="width:100%; height:250px;">
                 <div class="card-body text-center">
                     <h5 class="card-title fw-bold">{{ items.details.product.name }}</h5>
                     <p class="card-text text-muted">{{ items.details.product.dis }}</p>
                     <p class="card-text text-muted">₹{{ items.details.offer_price }}</p>  
+                    
+
                     <p class="card-text text-muted"> <span> <a href="quantity_dec/{{ items.id }}" class="btn btn-outline-secondary btn-sm">-
                     </a></span> {{ items.quantity }} <span><a href="quantity_inc/{{ items.id }}" class="btn btn-outline-secondary btn-sm">+
                     </a></span></p>
@@ -64,6 +66,7 @@
         <p class="text-center">Your cart is empty.</p>
         {% endfor %}
     </div>
+    <p style="margin-top:6vh;font-size:large;">Total Price: ₹{{ total_price }}</p>
     <div class="d-flex justify-content-between mt-4">
         <a href="cart_buy" class="btn btn-success">Proceed to Checkout</a>
         <a href="shop_home" class="btn btn-secondary">Continue Shopping</a>
