@@ -163,9 +163,9 @@ def register(req):
             for i in range(6):
                 otp+=str(random.randint(0,9))
             msg=f'Your registration is completed otp: {otp}'
-            send_mail('Registration',otp, settings.EMAIL_HOST_USER, [email])
-            Otp.objects.create(user=data,otp=otp)
-            send_mail('Registration','Your registration completed', settings.EMAIL_HOST_USER, [email])
+            otp=Otp.objects.create(user=data,otp=otp)
+            otp.save()
+            send_mail('Registration',msg, settings.EMAIL_HOST_USER, [email])
             return redirect(otp_confirmation)
         except:
             messages.warning(req,'Email already exist')
@@ -203,16 +203,19 @@ def user_home(req):
     else:
         return redirect(cosmetic_login)
 
+def view_details(req,id):
+    details=Details.objects.get(pk=id)
+    return render(req,'user/view_details.html',{'details':details})
 
 def add_to_cart(req, pid):
-    products = product.objects.get(pk=pid)
+    details = Details.objects.get(pk=pid)
     user = User.objects.get(username=req.session['user'])
     try:
-        cart = Cart.objects.get(product=products, user=user)
+        cart = Cart.objects.get(details=details, user=user)
         cart.quantity += 1
         cart.save()
     except:
-        data = Cart.objects.create(product=products, user=user, quantity=1)
+        data = Cart.objects.create(details=details, user=user, quantity=1)
         data.save()
     return redirect(view_cart)
 
@@ -228,8 +231,7 @@ def remove_item(req,id):
 
 def quantity_inc(req,cid):
     data=Cart.objects.get(pk=cid)
-    details=Details.objects.get(pk=cid)
-    if details.stock > data.quantity:
+    if data.details.stock > data.quantity:
         data.quantity+=1
         data.save()
     return redirect(view_cart) 
@@ -242,3 +244,26 @@ def quantity_dec(req,cid):
         data.delete()
     return redirect(view_cart)
 
+def buy_pro(req,pid):
+    details=Details.objects.get(pk=pid)
+    user=User.objects.get(username=req.session['user'])
+    quantity=1
+    price=details.offer_price
+    buy=Buy.objects.create(details=details,user=user,quantity=quantity,t_price=price)
+    buy.save()
+    return redirect(user_bookings)
+
+def user_bookings(req):
+    user=User.objects.get(username=req.session['user'])
+    bookings=Buy.objects.filter(user=user)[::-1]
+    return render(req,'user/user_bookings.html',{'bookings':bookings})
+
+def cart_buy(req,cid):
+    cart=Cart.objects.get(pk=cid)
+    price=cart.quantity*cart.details.offer_price
+    details=cart.details
+    details.stock-=cart.quantity
+    details.save()
+    buy=Buy.objects.create(details=cart.details,user=cart.user,quantity=cart.quantity,t_price=price)
+    buy.save()
+    return redirect(user_bookings)

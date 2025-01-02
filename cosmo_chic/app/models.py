@@ -24,7 +24,14 @@ class Otp(models.Model):
     otp=models.TextField()
     
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(product, on_delete=models.CASCADE)
-    # details = models.ForeignKey(Details,on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
+    details=models.ForeignKey(Details,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    quantity=models.IntegerField()
+
+class Buy(models.Model):
+    details=models.ForeignKey(Details,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE)
+    quantity=models.IntegerField()
+    t_price=models.IntegerField()
+    date=models.DateField(auto_now_add=True)
+
