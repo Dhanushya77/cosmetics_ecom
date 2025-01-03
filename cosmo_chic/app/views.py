@@ -206,10 +206,12 @@ def user_home(req):
 
 def view_details(req,id):
     products = product.objects.filter(pk=id).first()
+    data=Details.objects.all()
     if products:
         details = Details.objects.filter(product=products).first()
+        
         if details:
-            return render(req,'user/view_details.html',{'details':details})
+            return render(req,'user/view_details.html',{'details':details,'data':data})
         else:
             
             return render(req,'user/view_details.html', {'message': 'No details available for this product.'})
@@ -257,7 +259,8 @@ def quantity_dec(req,cid):
     return redirect(view_cart)
 
 def buy_pro(req,pid):
-    details=Details.objects.get(pk=pid)
+    products=product.objects.filter(pk=pid).first()
+    details=Details.objects.get(product=products)
     user=User.objects.get(username=req.session['user'])
     quantity=1
     price=details.offer_price
